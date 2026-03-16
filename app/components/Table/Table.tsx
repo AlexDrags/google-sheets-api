@@ -2,11 +2,23 @@
 import useSWR from 'swr';
 import "./table.scss";
 
-const fetcher = (url) => fetch(url).then((r) => r.json);
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
+interface SheetData {
+    headers: string[];
+    rows: string[][];
+}
+
+function formatCellValue(cell: string): string {
+    const num = parseFloat(cell);
+    if (!isNaN(num) && cell.trim() !== '') {
+        return num.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    }
+    return cell;
+}
 
 export default function CryptoTable() {
-    const { data } = useSWR(
+    const { data } = useSWR<SheetData>(
         '/api/sheets',
         fetcher,
         {
@@ -20,31 +32,25 @@ export default function CryptoTable() {
     const rows = data?.rows || [];
 
     return (
-            <>
-                <div className="table-wrapper">
-                    <table>
-                        <thead>
-                        <tr>
-                            {headers.map(function(header: string) {
-                                return <th key={header}>{header}</th>;
-                            })}
+        <div className="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        {headers.map((header: string) => (
+                            <th key={header}>{header}</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.map((row: string[], rowIndex: number) => (
+                        <tr key={rowIndex}>
+                            {row.map((cell: string, cellIndex: number) => (
+                                <td key={cellIndex}>{formatCellValue(cell)}</td>
+                            ))}
                         </tr>
-                        </thead>
-                        <tbody>
-                            {rows.map(function(row: string[], index: number) {
-                                return (
-                                    <tr key={index}>
-                                        {row.map(function(cell: string, cellIndex: number) {
-                                            return <td key={cellIndex}>{cell}</td>;
-                                        })}
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            </>
-        )
-    // };
-
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
 }

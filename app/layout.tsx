@@ -24,7 +24,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const googlePromise = createPayload('http://localhost:3000/api/sheets');
+  const googlePromise = createPayload();
   return (
     <html lang="en">
       <body

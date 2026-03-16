@@ -1,6 +1,6 @@
-export async function createPayload(baseUrl: string) {
+export async function createPayload() {
     // console.log(`Fetching data from ${baseUrl}api/sheets`);
-    const response = await fetch(`${baseUrl}`, {
+    const response = await fetch(`${process.env.BASE_PATH}${process.env.PATH_TO_FETCH}`, {
         method: "GET"
     });
     if (!response.ok) {
