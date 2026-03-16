@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SWRConfig } from 'swr';
 import "./globals.css";
-import { createPayload } from "./util/fetch";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,22 +22,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const googlePromise = createPayload();
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SWRConfig
-          value={{
-            fallback: {
-              // Передайте promises клиентским компонентам.
-              '/api/sheets': googlePromise,
-            },
-          }}
-        >
         {children}
-        </SWRConfig>
       </body>
     </html>
   );

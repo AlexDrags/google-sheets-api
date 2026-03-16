@@ -1,6 +1,6 @@
-export async function createPayload() {
-    // console.log(`Fetching data from ${baseUrl}api/sheets`);
-    const response = await fetch(`https://google-sheets-api-production.up.railway.app${process.env.PATH_TO_FETCH}`, {
+export async function createPayload(baseUrl: string) {
+    console.log(`Fetching data from ${baseUrl}api/sheets`);
+    const response = await fetch(`${baseUrl}/api/sheets`, {
         method: "GET"
     });
     if (!response.ok) {

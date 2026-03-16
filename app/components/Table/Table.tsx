@@ -1,13 +1,8 @@
 'use client';
-import useSWR from 'swr';
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { createPayload } from "@/app/util/fetch";
 import "./table.scss";
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
-
-interface SheetData {
-    headers: string[];
-    rows: string[][];
-}
 
 function formatCellValue(cell: string): string {
     const num = parseFloat(cell);
@@ -18,19 +13,25 @@ function formatCellValue(cell: string): string {
 }
 
 export default function CryptoTable() {
-    const { data } = useSWR<SheetData>(
-        '/api/sheets',
-        fetcher,
-        {
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
-            revalidateIfStale: false,
+    const pathname = usePathname();
+    const [headers, setHeaders] = useState<string[]>([]);
+    const [rows, setRows] = useState<string[][]>([]);
+
+    useEffect(() => {
+    // Do something here...
+    console.log('path', pathname)
+        const data = async function fetchData() {
+            const { headers, rows } = await createPayload(pathname);
+            setHeaders(headers);
+            setRows(rows);
         }
-    );
+        console.log("Fetching data...");
+        data();
+    }, [pathname, setHeaders, setRows, headers.length, rows.length]);
 
-    const headers = data?.headers || [];
-    const rows = data?.rows || [];
-
+    if (headers.length === 0 || rows.length === 0) {
+        return <div>Loading data from CoinGecko...</div>;
+    } else {
     return (
         <div className="table-container">
             <table>
@@ -52,5 +53,5 @@ export default function CryptoTable() {
                 </tbody>
             </table>
         </div>
-    );
+    )};
 }
